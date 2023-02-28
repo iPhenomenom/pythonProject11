@@ -1,3 +1,5 @@
+import datetime
+import re
 from collections import UserDict, UserList
 
 class Field:
@@ -7,19 +9,45 @@ class Field:
     def __str__(self) -> str:
         return f'{self.value}'
 
+
 class Name(Field):
     pass
 
 class Phone(Field):
-    pass
+    @property
+    def value(self):
+        return self.__value
 
-class Record(Name, Phone):
+    @value.setter
+    def value(self, new_value):
+        if re.search(r"\+\d{3}\(\d{2}\)\d{3}\-\d{2}\-\d{2}|\+\d{3}\(\d{2}\)\d{3}\-\d{1}\-\d{3}", new_value):
+            self.__value = new_value
+        else:
+            raise TypeError("Invalid number phone")
+
+class Birtday(Field):
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, new_value):
+        if re.search(r"\d{2}\-\d{2}\-\d{4}", new_value):
+            self.__value = new_value
+        else:
+            raise TypeError("Invalid Data Info")
+
+class Record(Name, Phone , Birtday):
 
     phone_list =[]
 
-    def __init__(self, name, phone):
+
+
+
+    def __init__(self, name, phone, date):
         self.name = name
         self.phone = phone
+        self.date = date
 
 
         if phone:
@@ -46,25 +74,52 @@ class Record(Name, Phone):
             self.phone_list.remove(self.phone)
             self.phone_list.append(self.new_phone)
 
+    def days_to_birthday(self, date):
 
 
+        if date == None:
+            pass
+
+        else:
+            test_date = str(date)
+            now = datetime.datetime.now()
+            then = datetime.datetime.strptime(test_date, "%d-%m-%Y")
+            delta1 = datetime.datetime(now.year, then.month, then.day)
+            delta2 = datetime.datetime(now.year + 1, then.month, then.day)
+
+            result = ((delta1 if delta1 > now else delta2) - now).days
+            print(f'Days to Birthday: {result}')
+            #self.phone_list.append(f"Days to Birthday: {result}")
 
 class AddressBook(UserDict, Record):
+
+
     def add_record(self, rec):
         self.data[rec.name.value] = rec
         return self.data
 
-
+    def iterator(self):
+        a = ab.phone_list
+        index = 0
+        yield a[index]
+        index += 1
 
 if __name__ == '__main__':
     name = Name('Bill')
-    phone = Phone('1234567890')
-    phone_1 = Phone("121241242")
-    phone_2 = Phone('1234567890414124')
-    rec = Record(name, phone)
+
+    phone = Phone('+380(96)163-50-10')
+    phone_1 = Phone('+380(96)163-50-20')
+    phone_2 = Phone('+380(96)163-50-13')
+
+    date = Birtday('25-03-2010')
+
+    rec = Record(name, phone, date)
+    rec.days_to_birthday(date)
+
     ab = AddressBook()
     ab.add_record(rec)
-    ab.add_phone(phone_1)
+    ab.iterator()
+
     #ab.del_phone(phone_1)
     #ab.change_phone(phone_1 , phone_2)
     print(ab.phone_list)
@@ -72,5 +127,5 @@ if __name__ == '__main__':
     assert isinstance(ab['Bill'].name, Name)
     assert isinstance(ab['Bill'].phone_list, list)
     assert isinstance(ab['Bill'].phone_list[0], Phone)
-    assert ab['Bill'].phone_list[0].value == '1234567890'
+    assert ab['Bill'].phone_list[0].value == '+380(96)163-50-10'
     print('All Ok)')
