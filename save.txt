@@ -1,0 +1,4 @@
+Name: jack, Phone: +380(99)324-32-23, Birthday: 30-04-1991
+Name: Johan, Phone: +380(96)384-88-88, Birthday: 30-04-1997
+Name: Molly, Phone: +380(37)324-76-76, Birthday: 13-09-1989
+Name: ack, Phone: +380(99)324-33-33, Birthday: 30-04-1999
